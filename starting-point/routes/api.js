@@ -57,4 +57,69 @@ router.get('/days/:id', function (req, res, next) {
     .catch(next);
 });
 
+router.post('/days', function (req, res, next) {
+  console.log(req.body);
+  Day.create(req.body)
+    .then((day) => {
+      res.status(201).json(day);
+    })
+    .catch(next);
+})
+
+router.put('/days/:id', function (req, res, next) {
+  Day.findOne({ where: { number: req.params.id } })
+    .then((day) => {
+      return day.update(req.body)
+    })
+    .then((updated) => {
+      res.status(204).json(updated);
+    })
+    .catch(next);
+})
+
+router.put('/days/:id/restaurants', (req, res, next) => {
+  Day.findOne({ where: { number: req.params.id } })
+    .then((day) => {
+      if (req.body.delete) {
+        day.getRestaurants({
+          where: {
+            id: {
+              $ne: req.body.restaurantId
+            }
+          }
+        })
+        .then((rests) => {
+          day.setRestaurants(rests)
+          .then(()=>{
+            res.sendStatus(204);
+          })
+        })
+      } else {
+        day.addRestaurant(req.body.restaurantId)
+          .then(() => {
+            res.sendStatus(202);
+          })
+      }
+    })
+})
+router.delete('/days/:id', (req, res, next) => {
+  Day.destroy({ where: { number: req.params.id } })
+    .then(deleted => {
+      res.status(202).json(deleted);
+    })
+    .catch(next);
+})
+
+
+// router.post('/days/:id/hotels', (req, res, next) => {
+//   Day.findOne({ where: { number: req.params.id } })
+//     .then((day) => {
+//       console.log(day)
+//       day.setHotel({ id: 1 });
+//       res.sendStatus(200);
+//       // hotel.update()
+//     })
+// })
+
+
 module.exports = router;
