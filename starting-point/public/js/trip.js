@@ -53,6 +53,12 @@ var tripModule = (function () {
       currentDay = newDay;
     }
     switchTo(newDay);
+
+    $.ajax({
+      method: 'POST',
+      url: `/api/days/`,
+      data: days.length
+    })
   }
 
   function deleteCurrentDay () {
@@ -68,12 +74,17 @@ var tripModule = (function () {
     });
     switchTo(newCurrent);
     previousDay.hideButton();
+
+        $.ajax({
+      method: 'DELETE',
+      url: `/api/days/${}`,
+      data: days.length
+    })
   }
 
   // globally accessible module methods
 
   var publicAPI = {
-
     load: function () {
       $(addDay);
     },
@@ -81,6 +92,14 @@ var tripModule = (function () {
     switchTo: switchTo,
 
     addToCurrent: function (attraction) {
+      // $.ajax({
+      //     method: 'PUT',
+      //     url: `api/days/${this.number}/restaurants`,
+      //     data: {
+      //       restaurantId: attraction.id
+      //     },
+      //     datatype: 'json'
+      //   })
       currentDay.addAttraction(attraction);
     },
 

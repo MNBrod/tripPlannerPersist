@@ -8,34 +8,42 @@
  * that attraction's id. Selecting an option looks up the attraction by id,
  * then tells the trip module to add the attraction.
  */
-
+var Hotels, Activities, Restaurants;
 $(function () {
-  $.ajax({
+  var hotelProm = $.ajax({
     method: 'GET',
     url: '/api/hotels'
   })
     .then((hotels) => {
+      Hotels = hotels;
       hotels.forEach(makeOption, $hotelSelect);
     })
     .catch(console.error)
 
-  $.ajax({
+  var activProm = $.ajax({
     method: 'GET',
     url: '/api/activities'
   })
     .then((activities) => {
+      Activities = activities;
       activities.forEach(makeOption, $activitySelect);
     })
     .catch(console.error)
 
-  $.ajax({
+  var restProm = $.ajax({
     method: 'GET',
     url: '/api/restaurants'
   })
     .then((restaurants) => {
+      Restaurants = restaurants;
       restaurants.forEach(makeOption, $restaurantSelect);
     })
     .catch(console.error)
+
+  Promise.all([hotelProm, activProm, restProm])
+    .then(() => {
+      attractionsModule.makeEnhanced(Hotels, Activities, Restaurants);
+    })
 
   // jQuery selects
   var $optionsPanel = $('#options-panel');

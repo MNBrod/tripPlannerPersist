@@ -77,6 +77,44 @@ router.put('/days/:id', function (req, res, next) {
     .catch(next);
 })
 
+router.delete('/days/:id', (req, res, next) => {
+  Day.destroy({ where: { number: req.params.id } })
+    .then(deleted => {
+      res.status(202).json(deleted);
+    })
+    .catch(next);
+})
+
+router.get('/days/:id/activities', function (req, res, next) {
+  Day.findOne({
+    where: {
+      number: req.params.id
+    }
+  })
+  .then((day)=> {
+    day.getActivities()
+    .then((results) => {
+      res.status(200).json(results);
+    })
+  })
+  .catch(next);
+})
+
+router.get('/days/:id/restaurants', function (req, res, next) {
+  Day.findOne({
+    where: {
+      number: req.params.id
+    }
+  })
+  .then((day)=> {
+    day.getRestaurants()
+    .then((results) => {
+      res.status(200).json(results);
+    })
+  })
+  .catch(next);
+})
+
 router.put('/days/:id/restaurants', (req, res, next) => {
   Day.findOne({ where: { number: req.params.id } })
     .then((day) => {
@@ -102,12 +140,48 @@ router.put('/days/:id/restaurants', (req, res, next) => {
       }
     })
 })
-router.delete('/days/:id', (req, res, next) => {
-  Day.destroy({ where: { number: req.params.id } })
-    .then(deleted => {
-      res.status(202).json(deleted);
+
+router.put('/days/:id/hotels', (req, res, next) => {
+  Day.findOne({ where: { number: req.params.id } })
+    .then((day) => {
+      if (req.body.delete) {
+          day.setHotel(null)
+          .then(()=>{
+            res.sendStatus(204);
+          })
+      } else {
+        day.setHotel(req.body.hotelId)
+          .then(() => {
+            res.sendStatus(202);
+          })
+      }
     })
-    .catch(next);
+})
+
+router.put('/days/:id/activities', (req, res, next) => {
+  Day.findOne({ where: { number: req.params.id } })
+    .then((day) => {
+      if (req.body.delete) {
+        day.getActivities({
+          where: {
+            id: {
+              $ne: req.body.activityId
+            }
+          }
+        })
+        .then((rests) => {
+          day.setActivities(rests)
+          .then(()=>{
+            res.sendStatus(204);
+          })
+        })
+      } else {
+        day.addActivity(req.body.activityId)
+          .then(() => {
+            res.sendStatus(202);
+          })
+      }
+    })
 })
 
 

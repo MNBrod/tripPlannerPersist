@@ -25,7 +25,7 @@ var dayModule = (function () {
 
   // Day class and setup
 
-  function Day (data) {
+  function Day(data) {
     // for brand-new days
     this.number = 0;
     this.hotel = null;
@@ -51,7 +51,7 @@ var dayModule = (function () {
     this.$button = $('<button class="btn btn-circle day-btn"></button>')
       .text(this.number);
     var self = this;
-    this.$button.on('click', function (){
+    this.$button.on('click', function () {
       this.blur(); // removes focus box from buttons
       tripModule.switchTo(self);
     });
@@ -73,7 +73,7 @@ var dayModule = (function () {
     this.$button.addClass('current-day');
     $dayTitle.text('Day ' + this.number);
     // attractions UI
-    function show (attraction) { attraction.show(); }
+    function show(attraction) { attraction.show(); }
     if (this.hotel) show(this.hotel);
     this.restaurants.forEach(show);
     this.activities.forEach(show);
@@ -84,7 +84,7 @@ var dayModule = (function () {
     this.$button.removeClass('current-day');
     $dayTitle.text('Day not Loaded');
     // attractions UI
-    function hide (attraction) { attraction.hide(); }
+    function hide(attraction) { attraction.hide(); }
     if (this.hotel) hide(this.hotel);
     this.restaurants.forEach(hide);
     this.activities.forEach(hide);
@@ -93,6 +93,8 @@ var dayModule = (function () {
   // day updating
 
   Day.prototype.addAttraction = function (attraction) {
+    //if attraction is rest:
+    //send put request to /api/days/CURRENTDAYNUM/restaurants with this attraction
     // adding to the day object
     switch (attraction.type) {
       case 'hotel':
